@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+import requests
+
+
+def github_request(endpoint, params={}):
+    req = requests.get(
+        endpoint,
+        headers={
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28',
+        },
+        params=params,
+    )
+
+    return req
+
+
+def fetch_pull_requests():
+    pass
+
+
+if __name__ == '__main__':
+    fetch_pull_requests()
