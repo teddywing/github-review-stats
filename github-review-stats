@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import datetime
 import json
 
 import requests
@@ -20,22 +21,35 @@ def github_request(token, endpoint, params={}):
     return req
 
 
-def fetch_pull_requests(token, owner_repo):
+def fetch_pull_requests(token, owner_repo, since):
+    since_date = datetime.datetime.fromisoformat(since)
+    since_date = since_date.replace(tzinfo=datetime.timezone.utc)
     collected_prs = []
 
-    resp = github_request(
-        token,
-        f"/repos/{owner_repo}/pulls",
-        params={
-            'state': 'closed',
-            'sort': 'created',
-            'direction': 'desc',
-            'per_page': 3,
-        }
-    )
+    page = 1
+    while True:
+        resp = github_request(
+            token,
+            f"/repos/{owner_repo}/pulls",
+            params={
+                'state': 'closed',
+                'sort': 'created',
+                'direction': 'desc',
+                'per_page': 100,
+                'page': page,
+            }
+        )
 
-    prs = resp.json()
-    collected_prs = collected_prs + prs
+        prs = resp.json()
+        collected_prs = collected_prs + prs
+
+        last_pr_created_at = datetime.datetime.fromisoformat(prs[0]['created_at'])
+
+        # If last_pr_created_at is older than since_date.
+        if last_pr_created_at <= since_date:
+            break
+
+        page += 1
 
     collected_prs_json = json.dumps(collected_prs)
 
@@ -53,8 +67,13 @@ if __name__ == '__main__':
         required=True,
         help='GitHub token',
     )
+    parser.add_argument(
+        '--since',
+        required=True,
+        help='Fetch pull requests since date ("1970-01-01")',
+    )
     parser.add_argument('owner_repo')
 
     args = parser.parse_args()
 
-    fetch_pull_requests(args.token, args.owner_repo)
+    fetch_pull_requests(args.token, args.owner_repo, args.since)
