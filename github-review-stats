@@ -5,6 +5,10 @@ import datetime
 import json
 
 
+def date_floor(dt):
+    return dt.replace(hour=0, minute=0, second=0)
+
+
 def build_review_statistics(pull_requests_file, reviews_directory):
     with open(pull_requests_file, 'r') as pr_file:
         prs = json.load(pr_file)
@@ -18,9 +22,10 @@ def build_review_statistics(pull_requests_file, reviews_directory):
             ) as review_file:
                 review = json.load(review_file)
 
-                pr_created_at = datetime.datetime.fromisoformat(pr['created_at'])
-                review_submitted_at = \
-                    datetime.datetime.fromisoformat(review[0]['submitted_at'])
+                pr_created_at = date_floor(
+                    datetime.datetime.fromisoformat(pr['created_at']))
+                review_submitted_at = date_floor(
+                    datetime.datetime.fromisoformat(review[0]['submitted_at']))
 
                 time_until_first_review = review_submitted_at - pr_created_at
 
