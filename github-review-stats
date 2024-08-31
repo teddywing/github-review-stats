@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+
+import argparse
+import datetime
+import json
+
+
+def build_review_statistics(pull_requests_file, reviews_directory):
+    with open(pull_requests_file, 'r') as pr_file:
+        prs = json.load(pr_file)
+
+        for pr in prs:
+            pull_number = pr['number']
+
+            with open(
+                f"{reviews_directory}/{pull_number}.json",
+                'r',
+            ) as review_file:
+                review = json.load(review_file)
+
+                pr_created_at = datetime.datetime.fromisoformat(pr['created_at'])
+                review_submitted_at = \
+                    datetime.datetime.fromisoformat(review[0]['submitted_at'])
+
+                time_until_first_review = review_submitted_at - pr_created_at
+
+                print(f"{pull_number}: {time_until_first_review.days}")
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='',
+    )
+
+    parser.add_argument('pull_requests_file')
+    parser.add_argument('reviews_directory')
+
+    args = parser.parse_args()
+
+    build_review_statistics(args.pull_requests_file, args.reviews_directory)
