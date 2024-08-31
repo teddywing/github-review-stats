@@ -60,7 +60,7 @@ def fetch_pull_requests(token, owner_repo, since):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Get statistics for GitHub code reviews',
+        description='Fetch GitHub pull requests for a repository',
     )
     parser.add_argument(
         '--token',
