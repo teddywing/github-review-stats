@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import json
 
 import requests
 
@@ -20,6 +21,8 @@ def github_request(token, endpoint, params={}):
 
 
 def fetch_pull_requests(token, owner_repo):
+    collected_prs = []
+
     resp = github_request(
         token,
         f"/repos/{owner_repo}/pulls",
@@ -30,7 +33,15 @@ def fetch_pull_requests(token, owner_repo):
             'per_page': 3,
         }
     )
-    print(resp.text)
+
+    prs = resp.json()
+    collected_prs = collected_prs + prs
+
+    collected_prs_json = json.dumps(collected_prs)
+
+    output_filename = owner_repo.split('/')[-1]
+    with open(f"{output_filename}.json", 'w') as f:
+        print(collected_prs_json, file=f)
 
 
 if __name__ == '__main__':
