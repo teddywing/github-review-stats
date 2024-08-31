@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 
+import argparse
+
 import requests
 
 
-def github_request(endpoint, params={}):
+def github_request(token, endpoint, params={}):
     req = requests.get(
-        endpoint,
+        f"https://api.github.com{endpoint}",
         headers={
             'Accept': 'application/vnd.github+json',
             'X-GitHub-Api-Version': '2022-11-28',
+            'Authorization': f"Bearer {token}",
         },
         params=params,
     )
@@ -16,9 +19,31 @@ def github_request(endpoint, params={}):
     return req
 
 
-def fetch_pull_requests():
-    pass
+def fetch_pull_requests(token, owner_repo):
+    resp = github_request(
+        token,
+        f"/repos/{owner_repo}/pulls",
+        params={
+            'state': 'closed',
+            'sort': 'created',
+            'direction': 'desc',
+            'per_page': 3,
+        }
+    )
+    print(resp.text)
 
 
 if __name__ == '__main__':
-    fetch_pull_requests()
+    parser = argparse.ArgumentParser(
+        description='Get statistics for GitHub code reviews',
+    )
+    parser.add_argument(
+        '--token',
+        required=True,
+        help='GitHub token',
+    )
+    parser.add_argument('owner_repo')
+
+    args = parser.parse_args()
+
+    fetch_pull_requests(args.token, args.owner_repo)
