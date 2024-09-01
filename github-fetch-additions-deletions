@@ -22,7 +22,7 @@ prs="$(jq \
 
 repo_name="$(jq --raw-output '.[0].base.repo.name' "$pull_requests_file")"
 output_directory="${repo_name}-additions-deletions"
-# mkdir "$output_directory"
+mkdir -p "$output_directory"
 
 for pr in $prs; do
 	pr_created_at="$(echo "$pr" \
@@ -38,8 +38,13 @@ for pr in $prs; do
 
 	pr_url="$(echo "$pr" | jq --raw-output '.url')"
 
+	output_file="${output_directory}/${pr_url##*/}.json"
+	if [ -f "$output_file" ]; then
+		continue
+	fi
+
 	gh pr view \
 		--json=additions,deletions \
 		"$pr_url" \
-	> "${output_directory}/${pr_url##*/}.json"
+	> "$output_file"
 done
