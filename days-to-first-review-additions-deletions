@@ -75,7 +75,9 @@ def plot_graph(pull_requests_file, additions_deletions_stats):
         additions_deletions_stats[pr]['additions'] \
             - additions_deletions_stats[pr]['deletions'] \
         for pr in additions_deletions_stats]
-    axes.scatter(num_days, additions_minus_deletions)
+    axes.scatter(num_days, additions)
+
+    axes.set_ylim(top=1000)
 
     axes.set_title(graph_title)
     axes.set_xlabel('Days until first review')
