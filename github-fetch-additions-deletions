@@ -24,13 +24,7 @@ repo_name="$(jq --raw-output '.[0].base.repo.name' "$pull_requests_file")"
 output_directory="${repo_name}-additions-deletions"
 # mkdir "$output_directory"
 
-i=0
 for pr in $prs; do
-	if [ $i -ge 2 ]; then
-		break
-	fi
-	i=$(($i + 1))
-
 	pr_created_at="$(echo "$pr" \
 		| jq \
 			--raw-output \
