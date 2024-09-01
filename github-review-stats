@@ -48,6 +48,8 @@ def build_review_statistics(pull_requests_file, reviews_directory):
 def plot_graph(pull_requests_file, days_to_first_review):
     import matplotlib.pyplot
 
+    graph_title = pull_requests_file.replace('.json', '')
+
     figure, axes = matplotlib.pyplot.subplots()
 
     num_days = days_to_first_review.keys()
@@ -60,11 +62,11 @@ def plot_graph(pull_requests_file, days_to_first_review):
         matplotlib.ticker.MultipleLocator(),
     )
 
-    axes.set_title(pull_requests_file.replace('.json', ''))
+    axes.set_title(graph_title)
     axes.set_xlabel('Days until first review')
     axes.set_ylabel('Count of pull requests')
 
-    matplotlib.pyplot.show()
+    matplotlib.pyplot.savefig(f"{graph_title}.png", format='png')
 
 
 if __name__ == '__main__':
