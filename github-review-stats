@@ -49,10 +49,12 @@ def plot_graph(pull_requests_file, days_to_first_review):
     import matplotlib.pyplot
 
     figure, axes = matplotlib.pyplot.subplots()
-    axes.bar(days_to_first_review.keys(), days_to_first_review.values())
+
+    num_days = days_to_first_review.keys()
+    axes.bar(num_days, days_to_first_review.values())
 
     axes.xaxis.set_major_locator(
-        matplotlib.ticker.MultipleLocator(),
+        matplotlib.ticker.FixedLocator(range(0, max(num_days) + 1)),
     )
     axes.yaxis.set_major_locator(
         matplotlib.ticker.MultipleLocator(),
