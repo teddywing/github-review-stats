@@ -9,11 +9,18 @@ def date_floor(dt):
     return dt.replace(hour=0, minute=0, second=0)
 
 
-def build_review_statistics(pull_requests_file, reviews_directory):
+def build_review_statistics(pull_requests_file, reviews_directory, since):
+    since_date = datetime.datetime.fromisoformat(since)
+    since_date = since_date.replace(tzinfo=datetime.timezone.utc)
+
     with open(pull_requests_file, 'r') as pr_file:
         prs = json.load(pr_file)
 
         for pr in prs:
+            pr_created_at = datetime.datetime.fromisoformat(pr['created_at'])
+            if pr_created_at < since_date:
+                break
+
             pull_number = pr['number']
 
             with open(
@@ -41,9 +48,18 @@ if __name__ == '__main__':
         description='',
     )
 
+    parser.add_argument(
+        '--since',
+        required=True,
+        help='Analyze pull requests since date ("1970-01-01")',
+    )
     parser.add_argument('pull_requests_file')
     parser.add_argument('reviews_directory')
 
     args = parser.parse_args()
 
-    build_review_statistics(args.pull_requests_file, args.reviews_directory)
+    build_review_statistics(
+        args.pull_requests_file,
+        args.reviews_directory,
+        args.since,
+    )
