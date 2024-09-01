@@ -22,6 +22,7 @@
 import argparse
 import datetime
 import json
+import os
 import sys
 
 import requests
@@ -59,6 +60,11 @@ def fetch_reviews(token, pull_requests_path, output_directory, since):
 
             owner_repo = pr['head']['repo']['full_name']
             pull_number = pr['number']
+            review_output_path = f"{output_directory}/{pull_number}.json"
+
+            # Don't fetch if the script already downloaded the review.
+            if os.path.isfile(review_output_path):
+                continue
 
             resp = github_request(
                 token,
