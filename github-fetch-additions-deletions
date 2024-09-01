@@ -1,0 +1,51 @@
+#!/bin/bash
+
+set -e
+
+EX_USAGE=64
+
+if [ $# -ne 2 ]; then
+	echo >&2 'usage: github-fetch-additions-deletions <pull-requests-file> <since>'
+	exit $EX_USAGE
+fi
+
+pull_requests_file="$1"
+since="$2"
+since_timestamp="$(date -j -f "%F" "$since" +'%s')"
+
+prs="$(jq \
+	--compact-output \
+	'.[] | {url: .html_url, created_at: .created_at}' \
+	"$pull_requests_file"
+)"
+
+
+repo_name="$(jq --raw-output '.[0].base.repo.name' "$pull_requests_file")"
+output_directory="${repo_name}-additions-deletions"
+# mkdir "$output_directory"
+
+i=0
+for pr in $prs; do
+	if [ $i -ge 2 ]; then
+		break
+	fi
+	i=$(($i + 1))
+
+	pr_created_at="$(echo "$pr" \
+		| jq \
+			--raw-output \
+			'.created_at'
+	)"
+	pr_created_timestamp="$(date -j -f "%FT%TZ" "$pr_created_at" +'%s')"
+
+	if [ "$pr_created_timestamp" -le "$since_timestamp" ]; then
+		break
+	fi
+
+	pr_url="$(echo "$pr" | jq --raw-output '.url')"
+
+	gh pr view \
+		--json=additions,deletions \
+		"$pr_url" \
+	> "${output_directory}/${pr_url##*/}.json"
+done
