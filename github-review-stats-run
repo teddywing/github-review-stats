@@ -33,7 +33,11 @@ since="$2"
 owner_repo="$3"
 repo="${owner_repo#*/}"
 
-python github-fetch-pull-requests --token="$token" --since="$since" "$owner_repo"
+if [ ! -f "${repo}.json" ]; then
+	python github-fetch-pull-requests --token="$token" --since="$since" "$owner_repo"
+fi
+
 mkdir "${repo}-reviews"
 python github-fetch-reviews --token="$token" --since="$since" "${repo}.json" "${repo}-reviews"
+
 python github-review-stats "${repo}.json" "${repo}-reviews"
