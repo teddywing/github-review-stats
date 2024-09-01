@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# github-review-stats-run
+
+EX_USAGE=64
+
+if [ $# -ne 3 ]; then
+	echo >&2 'usage: github-review-stats-run <github-token> <since-date> <github-owner/repo>'
+	exit $EX_USAGE
+fi
+
+token="$1"
+since="$2"
+owner_repo="$3"
+repo="${owner_repo#*/}"
+
+python github-fetch-pull-requests --token="$token" --since="$since" "$owner_repo"
+python github-fetch-reviews --token="$token" --since="$since" "${repo}.json" "${repo}-reviews"
+python github-review-stats "${repo}.json" "${repo}-reviews"
