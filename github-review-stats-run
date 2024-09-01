@@ -19,6 +19,8 @@
 # <https://www.gnu.org/licenses/>.
 
 
+set -e
+
 EX_USAGE=64
 
 if [ $# -ne 3 ]; then
@@ -32,5 +34,6 @@ owner_repo="$3"
 repo="${owner_repo#*/}"
 
 python github-fetch-pull-requests --token="$token" --since="$since" "$owner_repo"
+mkdir "${repo}-reviews"
 python github-fetch-reviews --token="$token" --since="$since" "${repo}.json" "${repo}-reviews"
 python github-review-stats "${repo}.json" "${repo}-reviews"
