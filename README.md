@@ -26,6 +26,12 @@ by the number of days taken until their first review.
   GraphQL API or a local copy of the repository).
 
 
+## Bugs
+* github-fetch-reviews: Frequently errors with “OSError: [Errno 12] Cannot
+  allocate memory”. To bypass the error, keep re-running the script until it
+  completes successfully.
+
+
 ## License
 Copyright © 2024 Teddy Wing. Licensed under the GNU GPLv3+ (see the included
 COPYING file).
