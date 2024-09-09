@@ -58,7 +58,7 @@ def fetch_reviews(token, pull_requests_path, output_directory, since):
             if pr_created_at < since_date:
                 break
 
-            owner_repo = pr['head']['repo']['full_name']
+            owner_repo = pr['base']['repo']['full_name']
             pull_number = pr['number']
             review_output_path = f"{output_directory}/{pull_number}.json"
 
