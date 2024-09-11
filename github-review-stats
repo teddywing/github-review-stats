@@ -70,6 +70,8 @@ def plot_graph(pull_requests_file, days_to_first_review):
     graph_title = pull_requests_file.replace('.json', '')
 
     figure, axes = matplotlib.pyplot.subplots()
+    # figure.set_figheight(7.5)
+    # figure.set_figwidth(12)
 
     num_days = days_to_first_review.keys()
     axes.bar(num_days, days_to_first_review.values())
@@ -79,7 +81,11 @@ def plot_graph(pull_requests_file, days_to_first_review):
     )
     axes.yaxis.set_major_locator(
         matplotlib.ticker.MultipleLocator(),
+        # matplotlib.ticker.MultipleLocator(base=2),
     )
+    # axes.yaxis.set_minor_locator(
+    #     matplotlib.ticker.AutoMinorLocator(n=2),
+    # )
 
     axes.set_title(graph_title)
     axes.set_xlabel('Days until first review')
